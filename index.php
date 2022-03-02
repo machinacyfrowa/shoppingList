@@ -1,3 +1,8 @@
+<style>
+    .complete {
+        text-decoration: line-through;
+    }
+</style>
 <?php
 //połaczenie do bazy danych (host, login, hasło, baza)
 $db = new mysqli('localhost','root','','shoppingList');
@@ -16,7 +21,7 @@ if(isset($_REQUEST['newThing']) && $_REQUEST['newThing'] != "" ) {
 
 
     //tworzy kwerendę
-    $q = $db->prepare("INSERT INTO list VALUES (NULL, ?)");
+    $q = $db->prepare("INSERT INTO list VALUES (NULL, ?, 0)");
     //podstawia wartości zamiast znaków zapytania
     $q->bind_param('s', $_REQUEST['newThing']);
     // 's' oznacza element tekstowy typu 'string'
@@ -30,6 +35,16 @@ if(isset($_REQUEST['removeThing'])) {
     $q = $db->prepare("DELETE FROM list WHERE id=?");
     //podstaw id jako int - stąd i
     $q->bind_param('i', $_REQUEST['removeThing']);
+    $q->execute();
+}
+
+//sprawdz czy otrzymaliśmy pozycję do skreślenia
+if(isset($_REQUEST['completeThing'])) {
+    echo "Skreślam pozycję";
+    //tworzymy kwerendę
+    $q = $db->prepare("UPDATE list SET complete=1 WHERE id=?");
+    //podstaw id jako int - stąd i
+    $q->bind_param('i', $_REQUEST['completeThing']);
     $q->execute();
 }
 
@@ -50,12 +65,19 @@ $result = $db->query($q);
 echo '<ul>';
 //loop  thru database result
 while($row = $result->fetch_assoc()) {
-    //start list item
-    echo '<li>';
+    if($row['complete']) {
+        //już kupione
+        echo '<li class="complete">';    
+    } else {
+        //start list item
+        echo '<li>';
+    }
     //put list item name
     echo $row['thing'];
     //wygeneruj link do wywołania kodu usuwającego
     echo '<a href="index.php?removeThing='.$row['id'].'">Usuń</a>';
+    //wygeneruj link do wywołania kodu skreślającego
+    echo '<a href="index.php?completeThing='.$row['id'].'">Skreśl</a>';
     //end list item
     echo '</li>';
 }
