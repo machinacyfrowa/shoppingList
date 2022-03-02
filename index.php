@@ -24,6 +24,16 @@ if(isset($_REQUEST['newThing']) && $_REQUEST['newThing'] != "" ) {
     $q->execute();
 }
 
+//sprawdz czy otrzymaliśmy pozycję do usunięcia
+if(isset($_REQUEST['removeThing'])) {
+    //tworzymy kwerendę
+    $q = $db->prepare("DELETE FROM list WHERE id=?");
+    //podstaw id jako int - stąd i
+    $q->bind_param('i', $_REQUEST['removeThing']);
+    $q->execute();
+}
+
+
 //ręcznie szykujemy kwerendę
 $q = "SELECT * FROM list";
 
@@ -44,6 +54,8 @@ while($row = $result->fetch_assoc()) {
     echo '<li>';
     //put list item name
     echo $row['thing'];
+    //wygeneruj link do wywołania kodu usuwającego
+    echo '<a href="index.php?removeThing='.$row['id'].'">Usuń</a>';
     //end list item
     echo '</li>';
 }
