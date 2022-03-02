@@ -31,14 +31,33 @@
         //$thing = $_REQUEST['newThing'];
         //$q = "INSERT INTO list VALUES (NULL, \'$thing\')";
 
+        //sprawdz czy w tekscie jest przecinek
+        if (strpos($_REQUEST['newThing'], ',')) {
+            //wywołaj jeśli otrzymaliśmy listę po przecinku
+            //zamień string na tablicę stringów dzieląc w miejscu przecinków
+            $list = explode(',', $_REQUEST['newThing']);
 
-        //tworzy kwerendę
-        $q = $db->prepare("INSERT INTO list VALUES (NULL, ?, 0)");
-        //podstawia wartości zamiast znaków zapytania
-        $q->bind_param('s', $_REQUEST['newThing']);
-        // 's' oznacza element tekstowy typu 'string'
-        //wywołaj kwerendę
-        $q->execute();
+            foreach ($list as $item) {
+                //dla wszystkich elementów listy
+                //tworzy kwerendę
+                $q = $db->prepare("INSERT INTO list VALUES (NULL, ?, 0)");
+                //podstawia wartości zamiast znaków zapytania
+                $q->bind_param('s', $item);
+                // 's' oznacza element tekstowy typu 'string'
+                //wywołaj kwerendę
+                $q->execute();
+            }
+        } else {
+            //mamy tylko jeden element do dodania
+
+            //tworzy kwerendę
+            $q = $db->prepare("INSERT INTO list VALUES (NULL, ?, 0)");
+            //podstawia wartości zamiast znaków zapytania
+            $q->bind_param('s', $_REQUEST['newThing']);
+            // 's' oznacza element tekstowy typu 'string'
+            //wywołaj kwerendę
+            $q->execute();
+        }
     }
 
     //sprawdz czy otrzymaliśmy pozycję do usunięcia
@@ -57,6 +76,13 @@
         $q = $db->prepare("UPDATE list SET complete=1 WHERE id=?");
         //podstaw id jako int - stąd i
         $q->bind_param('i', $_REQUEST['completeThing']);
+        $q->execute();
+    }
+    //sprawdz czy otrzymaliśmy polecenia wyczyczenia listy
+    if (isset($_REQUEST['clear'])) {
+        echo "Czyczę listę";
+        //tworzymy kwerendę
+        $q = $db->prepare("TRUNCATE TABLE list");
         $q->execute();
     }
 
@@ -87,9 +113,11 @@
         //put list item name
         echo $row['thing'];
         //wygeneruj link do wywołania kodu usuwającego
-        echo '<a href="index.php?removeThing=' . $row['id'] . '">Usuń</a>';
+        echo '<a href="index.php?removeThing=' . $row['id'] . '">
+                <button>Usuń</button></a>';
         //wygeneruj link do wywołania kodu skreślającego
-        echo '<a href="index.php?completeThing=' . $row['id'] . '">Skreśl</a>';
+        echo '<a href="index.php?completeThing=' . $row['id'] . '">
+                <button>Skreśl</button></a>';
         //end list item
         echo '</li>';
     }
@@ -100,10 +128,10 @@
     ?>
     <form action="index.php" method="get">
         <label for="newThing">Dodaj do listy:</label>
-        <input type="text" name="newThing" id="newThing">
+        <input type="text" name="newThing" id="newThing" required>
         <input type="submit" value="Dodaj">
     </form>
-
+    <a href="index.php?clear">Wyczyść listę</a>
     <?php
     //debug, testy
     //echo '<pre>';

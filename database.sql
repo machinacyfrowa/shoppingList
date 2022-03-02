@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Czas generowania: 02 Mar 2022, 10:00
+-- Czas generowania: 02 Mar 2022, 11:52
 -- Wersja serwera: 10.4.22-MariaDB
 -- Wersja PHP: 8.0.15
 
@@ -29,18 +29,16 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `list` (
   `id` int(11) NOT NULL,
-  `thing` text NOT NULL
+  `thing` text NOT NULL,
+  `complete` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Zrzut danych tabeli `list`
 --
 
-INSERT INTO `list` (`id`, `thing`) VALUES
-(1, 'mleko'),
-(2, 'masło'),
-(3, 'chleb'),
-(4, 'jajka');
+INSERT INTO `list` (`id`, `thing`, `complete`) VALUES
+(2, 'chleb', 1);
 
 --
 -- Indeksy dla zrzutów tabel
@@ -60,7 +58,7 @@ ALTER TABLE `list`
 -- AUTO_INCREMENT dla tabeli `list`
 --
 ALTER TABLE `list`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
