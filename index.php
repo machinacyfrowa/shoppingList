@@ -36,12 +36,18 @@ $result = $db->query($q);
 //wyświetl pozycję z listy zakupów
 //echo $row['thing'];
 
+//start unordered list
 echo '<ul>';
+//loop  thru database result
 while($row = $result->fetch_assoc()) {
+    //start list item
     echo '<li>';
+    //put list item name
     echo $row['thing'];
+    //end list item
     echo '</li>';
 }
+//end unordered list
 echo '</ul>';
 
 
